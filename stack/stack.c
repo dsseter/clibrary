@@ -12,9 +12,9 @@ typedef struct Stack
 	int data_size;
 } Stack;
 */
-int initStack(Stack** stack,int data_size)
+int initStack(Stack** stack)
 {
-	void** st_base = (void**) malloc(sizeof(void*)*STACK_INIT_LEN);
+	void** st_base = (void**) malloc(sizeof(void**)*STACK_INIT_LEN);
 	Stack* st = (Stack*) malloc(sizeof(Stack));
 	//printf("%d\n", sizeof(void*)*STACK_INIT_LEN);
 	if(!st_base || !st)
@@ -23,7 +23,6 @@ int initStack(Stack** stack,int data_size)
 		return 1;
 	}
 	st->size = STACK_INIT_LEN;
-	st->data_size = sizeof(void*);
 	st->base = st->top = st_base;
 	*stack = st;
 	return 0;
@@ -72,8 +71,7 @@ void* popStack(Stack* stack)
 		printf("stack is empty in popstack\n");
 		return NULL;
 	}
-	stack->top -= stack->data_size;
-	return  *(stack->top);
+	return  *--(stack->top);
 }
 
 int lengthStack(Stack* stack)
@@ -81,9 +79,8 @@ int lengthStack(Stack* stack)
 	if(!stack)
 	{
 		printf("stack is NULL in lengthStack\n");
-		return 0;
-	}
-	return (stack->top - stack->base)/stack->data_size;
+		return 0; }
+	return (stack->top - stack->base);
 }
 int pushStack(Stack* stack, void* data)
 {
@@ -93,22 +90,22 @@ int pushStack(Stack* stack, void* data)
 		return 1 ;
 	}
 	void** st_base = NULL;
-	if((stack->top - stack->base)/stack->data_size == stack->size)
+	if((stack->top - stack->base) == stack->size)
 	{
-		st_base = (void**) realloc(stack->base, (stack->size+STACK_INC_LEN)*stack->data_size);
+		st_base = (void**) realloc(stack->base, stack->size+STACK_INC_LEN);
 		if(!st_base)
 		{
 			printf("realloc is error in pushStack\n");
 			return 1;
 		}
-		stack->top = st_base + stack->size * stack->data_size;
+		stack->top = st_base + stack->size;
 		stack->base = st_base;
 		stack->size += STACK_INC_LEN;
 	}
 	printf("%d, %p, %p, %p\n", *(int*)data, data, stack->base, stack->top);
 	*(stack->top) = data;
-	stack->top += stack->data_size;
-	printf("%d, %p, %p, %p\n", *(int*)data, data, stack->base, stack->top - stack->data_size);
+	stack->top++;
+	printf("%d, %p, %p, %p\n", *(int*)data, data, stack->base, stack->top);
 	return 0;
 }
 /*
@@ -126,7 +123,7 @@ void* peekStack(Stack* stack)
 		printf("stack is empty in peekstack\n");
 		return NULL;
 	}
-	return *(stack->top - stack->data_size);
+	return *(stack->top--);
 }
 void printStack(Stack* stack, void(*print)(void*))
 {
@@ -144,9 +141,9 @@ void printStack(Stack* stack, void(*print)(void*))
 	int *a = NULL;
 	while(st_base < stack->top)
 	{
-		printf("%p, %p, %d, %d \n", st_base, *st_base, stack->data_size, *(int*)*st_base );
+		printf("%p, %p, %d \n", st_base, *st_base, *(int*)*st_base );
 
-		st_base += stack->data_size;
+		st_base++;
 	}
 	printf("\n");
 }

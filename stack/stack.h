@@ -8,10 +8,9 @@ typedef struct Stack
 	void** base;
 	void** top;
 	int size;
-	int data_size;
 } Stack;
 
-int initStack(Stack**, int);
+int initStack(Stack**);
 void destoryStack(Stack*);
 void clearStack(Stack*);
 int isEmptyStack(Stack const*);
